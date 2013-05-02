@@ -2448,6 +2448,22 @@ then  y in ProperPrefixes v or y = v &amp; v in ProperPrefixes (v^&lt;*x*&gt;)
   hence thesis by A4;
 end;</code></pre>
 
+<tr>
+    <th>xbasic
+    <td class="xbasic">
+<pre><code>function formatAddress as c (options as p)
+    dim txt as c = ""
+    txt = txt + options.firstname + " " + options.lastname + crlf()
+    txt = txt + options.address1 + crlf()
+    if options.address2 <> "" then
+        txt = txt + options.address2 + crlf()
+    end if
+    txt = options.city + ", " + options.state + " " + options.zip
+
+    formatAddress = txt
+end function 
+</code></pre>
+
 </table>
 
 <script>
