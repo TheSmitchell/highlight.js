@@ -674,3 +674,12 @@ Mizar ("mizar"):
 
   keyword          keyword
   comment          comment
+
+
+xbasic ("xbasic"):
+
+  keyword keyword
+  number number
+  string string
+  comment comment
+  built_in built-in function or system object
