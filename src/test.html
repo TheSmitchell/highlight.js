@@ -2451,17 +2451,115 @@ end;</code></pre>
 <tr>
     <th>xbasic
     <td class="xbasic">
-<pre><code>function formatAddress as c (options as p)
-    dim txt as c = ""
-    txt = txt + options.firstname + " " + options.lastname + crlf()
-    txt = txt + options.address1 + crlf()
-    if options.address2 <> "" then
-        txt = txt + options.address2 + crlf()
-    end if
-    txt = options.city + ", " + options.state + " " + options.zip
+<pre class="xbasic"><code class="xbasic">'Date Created: 28-Feb-2013 10:53:08 AM
+'Last Updated: 06-Mar-2013 02:19:55 PM
+'Created By  : Sarah
+'Updated By  : Sarah
+FUNCTION getEmailTmplAndVars AS P (tmpl AS C)
+	dim result as p
+	
+	dim pUser as p
+	A5WS_Logged_In_User_Values(pUser)
+	if (variable_exists("pUser.userid") &lt;&gt; .T.) then
+		result.error = .t.
+		result.error_msg = "User is not logged in."
+		getEmailTmplAndVars = result
+		end
+	end if
+		
+	
+	if (variable_exists("session.__protected__ulink") &lt;&gt; .t.) then
+		result.error = .t.
+		result.error_msg = "User is not logged in."
+		getEmailTmplAndVars = result
+		end
+	end if
+	
+	dim cn as SQL::Connection
+	cn.open("::name::conn")
+	vSelect =<<%sql%
+SELECT USERID, FNAME, LNAME FROM web_users WHERE ID=:ULINK
+%sql%
+	dim args as sql::arguments
+	args.add("ULINK",session.__protected__ulink)
+	if (cn.execute(vSelect, args) &lt;&gt; .f.) then
+		if (cn.resultset.nextrow())
+			dim shared vfname as c 		= cn.resultset.data("fname")
+			dim shared vlname as c		= cn.resultset.data("lname")
+		else
+			logError("No User", 3)
+			result.error = .t.
+			result.error_msg = "No user"
+			getEmailTmplAndVars = result
+			cn.close()
+			end
+		end if
+	else
+		logError("user " + cn.callresult.text, 3)
+		result.error = .t.
+		result.error_msg = "user: " + cn.callresult.text
+		getEmailTmplAndVars = result
+		cn.close()
+		end
+	end if
 
-    formatAddress = txt
-end function 
+	vSelect =<<%b%
+SELECT app_name,app_url,support_contact,support_url,support_phone,email_from FROM wt_setup
+%b%
+	if (cn.execute(vSelect) &lt;&gt; .f.) then
+		dim shared vapp_name as c 			= cn.resultset.data("app_name")
+		dim shared vapp_url as c			= cn.resultset.data("app_url")
+		dim shared vsupport_contact as c 	= cn.resultset.data("support_contact")
+		dim shared vsupport_url as c 		= cn.resultset.data("support_url")
+		dim shared vsupport_phone as c		= cn.resultset.data("support_phone")
+		
+		dim shared vfrom_email as c			= cn.resultset.data("email_from")
+	else
+		logError("wt_setup " + cn.callresult.text, 3)
+		result.error = .t.
+		result.error_msg = "wt_setup: " + cn.callresult.text
+		getEmailTmplAndVars = result
+		cn.close()
+		end
+	end if
+
+	
+	vSelect = "SELECT SUBJECT, BODY FROM wt_email WHERE TEMPLATE=:TEMPLATE"
+	args.add("TEMPLATE",tmpl)
+	if (cn.execute(vSelect,args) &lt;&gt; .f.) then
+		vbody 		= cn.resultset.data("body")
+		vsubject	= cn.resultset.data("subject")
+	else
+		logError("wt_email " + cn.callresult.text, 3)
+		result.error = .t.
+		result.error_msg = "wt_email: " + cn.callresult.text
+		getEmailTmplAndVars = result
+		cn.close()
+		end
+	end if
+	cn.close()
+	
+	dim subject as c = alltrim(MM_Subj_General(vsubject))
+	dim message as c = alltrim(MM_Msg_General(vbody))
+	
+	result.error = .f.
+	result.error_msg = "success"
+	
+	result.app_name = vapp_name
+	result.app_url = vapp_url
+	result.support_contact = vsupport_contact
+	result.supprt_url = vsupport_url
+	result.support_phone = vsupport_phone
+	result.support_email = vfrom_email
+	result.fname = vfname
+	result.lname = vlname
+	result.subject = subject
+	result.body = message
+	
+	getEmailTmplAndVars = result
+	
+END FUNCTION
+<pre><code>
 </code></pre>
 
 </table>
