@@ -1,7 +1,7 @@
 /*
 Language: xbasic
-Author: Sarah Mitchell <sarahthepark@gmail.com>
-
+Requires: sql.js, javascript.js
+Author: Sarah Mitchell <email address omitted>
 */
 
 function(hljs) {
@@ -9,15 +9,20 @@ function(hljs) {
     case_insensitive: true,
     keywords: {
       keyword:
-        'A5 AS BROWSE BYREF BYVAL CASE CLASS CONSTANT CONTINUE CONTROL CONTROLPANEL DDE DECLARE DECLARESTUCT' +
-        'DEFINE DELETE DICTIONARY DIM EACH ELSE EMAIL END ERROR EXIT FIELD FILE FILEFIND FOR FORM FUNCTION' +
-        'GOTO IF IMPORT INCLUDE INDEX LABEL LET LETTER MACRO NEXT OLE ON OPTION PACKAGE PARENT PARENTFORM' +
-        'QUERY RECORD REDIM REGISTRY REPORT RESUME RETURN SELECT SET SOCKETS SQL STATUSBAR STOP TABLE THEN' +
-        'THIS TOOLBAR TOPPARENT TRACE TYPE UNDECLARE WEBPAGE WHILE WITH YIELD',
+        'a c v n l p a5 as browse byref byval case class constant continue control controlpanel dde declare declarestuct ' +
+        'define delete dictionary dim each else email end error exit field file filefind for form function ' +
+        'goto if import include index label let letter macro next ole on option package parent parentform ' +
+        'query record redim registry report resume return select set sockets sql statusbar stop table then ' +
+        'this toolbar topparent trace type undeclare webpage while with yield',
       built_in:
-        '.AND. .OR. .NOT. .XOR. REQUEST RESPONSE SERVER SESSION',
+        'alltext alltrim asc at atc chr contains left len lower ltrim occurs quote rtrim stritran strtran ' +
+	'str substr upper val word wordat wordatc add_bus_days addmonths addyears age cdow cmonth ctod cyear ' +
+	'date date_value day month now time totime year between case ccvalid eval iif eof line_count ceiling ' +
+	'floor int current_filter_expn current_order_expn average count maximum minimum reccount recno ' +
+	'run_count run_total total pagecount pageno isalpha isdate isnumber ' + 
+	'.and. .or. .not. .xor. request response server session',
       literal:
-        '.T. .F.'
+        '.t. .f.'
     },
     illegal: '',
     contains: [
@@ -25,7 +30,15 @@ function(hljs) {
         className: 'comment',
         begin: '\'', end: '$'
       },
-      hljs.QUOTE_STRING_MODE,
+      {
+        className: 'string',
+        begin: '"', end: '"',
+	illegal: '\n'
+      },
+      {
+        className: 'string',
+        begin: '<<%[a-zA-Z]+%', end: '^%[a-zA-Z]+%'
+      },
       hljs.C_NUMBER_MODE
     ]
   };
