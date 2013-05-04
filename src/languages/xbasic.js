@@ -1,6 +1,5 @@
 /*
-Language: xbasic
-Requires: sql.js, javascript.js
+Language: Alpha Five's Xbasic
 Author: Sarah Mitchell <email address omitted>
 */
 
